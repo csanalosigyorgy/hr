@@ -1,21 +1,32 @@
 package hu.webuni.hr.gyuri96.configuration;
 
+import java.util.TreeMap;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
 import lombok.Data;
 
 @Configuration
-@ConfigurationProperties("hr")
+@ConfigurationProperties(prefix = "hr")
 @Data
 public class HrConfogurationProperties {
 
-	private Rise rise = new Rise();
+	private Salary salary = new Salary();
 
 	@Data
-	public static class Rise {
-		private int ten;
-		private int five;
-		private int twoAndHalf;
+	public static class Salary {
+		private Default aDefault = new Default();
+		private Smart smart = new Smart();
+	}
+
+	@Data
+	public static class Default {
+		private int percent;
+	}
+
+	@Data
+	public static class Smart {
+		private TreeMap<Double, Integer> limits;
 	}
 }

@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<h1>Modify Employee</h1>
+    <form th:action = "@{/employees}" method = "post" th:object="${modifiedEmployee}">
+        <label>Name: </label><input th:field = "*{name}" /> <br/>
+        <label>Rank: </label><input th:field = "*{rank}"/> <br/>
+        <label>Salary: </label><input th:field = "*{salary}"/> <br/>
+        <label>Date of Entry: </label><input type="datetime-local" th:field="*{dateOfEntry}"/> <br/>
+        <input type = "submit" value = "modify"/>
+    </form>
+</body>
+</html>

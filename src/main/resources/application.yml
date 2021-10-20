@@ -1,0 +1,28 @@
+server:
+  servlet:
+    context-path: /hr/api
+
+spring:
+  profiles:
+    active:
+      - smart
+
+    thymeleaf:
+        cache: false
+
+    mvc:
+        format:
+            date-time: yyyy-MM-dd HH:mm:ss
+
+hr:
+    salary:
+      a-default:
+          percent: 5
+      smart:
+        limits:
+          1: 2
+          2.5: 5
+          5: 10
+          10: 20
+          7.5: 15
+          15: 30

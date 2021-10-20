@@ -1,6 +1,9 @@
 package hu.webuni.hr.gyuri96.service;
 
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+import java.util.Optional;
+import java.util.TreeMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,32 +20,12 @@ public class SmartEmployeeService implements EmployeeService {
 	@Override
 	public int getPayRisePercent(Employee employee) {
 
-		int numberOfMonthAtTheCompany = getNumberOfMonthAtTheCompany(employee.getDateOfEntry());
-		int percentOfRaise;
+		TreeMap<Double, Integer> limits = hrConfogurationProperties.getSalary().getSmart().getLimits();
+		double yearsWorked = ChronoUnit.DAYS.between(employee.getDateOfEntry(), LocalDateTime.now()) / 365.0;
 
-		if(numberOfMonthAtTheCompany > 120) {
-			percentOfRaise = hrConfogurationProperties.getRise().getTen();
-		} else if(numberOfMonthAtTheCompany >  60) {
-			percentOfRaise = hrConfogurationProperties.getRise().getFive();
-		} else if (numberOfMonthAtTheCompany >  30) {
-			percentOfRaise = hrConfogurationProperties.getRise().getTwoAndHalf();
-		} else {
-			percentOfRaise = 0;
-		}
+		Optional<Double> optionalMax = limits.keySet().stream().filter(l -> yearsWorked >= l).max(Double::compare);
 
-		return percentOfRaise;
+		return optionalMax.isEmpty() ? 0 : limits.get(optionalMax.get());
 	}
 
-
-	private int getNumberOfYearsAtTheCompany(LocalDateTime dateOfEntry){
-		return LocalDateTime.now().getYear() - dateOfEntry.getYear();
-	}
-
-	private int getNumberOfMonthAtTheCompany(LocalDateTime dateOfEntry){
-
-		int numberOfYearsAtTheCompany = getNumberOfYearsAtTheCompany(dateOfEntry);
-		int numberOfMonthThisYearAtTheCompany = LocalDateTime.now().getMonthValue() - dateOfEntry.getMonthValue();
-
-		return numberOfYearsAtTheCompany * 12 + numberOfMonthThisYearAtTheCompany;
-	}
 }
