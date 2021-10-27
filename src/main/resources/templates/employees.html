@@ -2,7 +2,7 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Company</title>
 </head>
 <body>
     <h1>List of Employees At the Company</h1>
@@ -18,13 +18,18 @@
         </thead>
         <tbody>
             <tr th:each = "employee : ${employeeList}">
-                <td th:text = "${employee.getId()}">id</td>
-                <td ><a th:href = "@{/modify}" th:text = "${employee.getName()}" th:object="${employee}">name</a> </td>
-                <td th:text = "${employee.getRank()}">rank</td>
-                <td th:text = "${employee.getSalary}">salary</td>
-                <td th:text = "${#temporals.format(employee.getDateOfEntry(), 'yyyy-MM-dd')}">date of entry</td>
-                <td th:href = "@{/employees/(employee=${employee})}"><button type="button">delete</button></td>
-
+                <td th:text = "${employee.id}">id</td>
+                <td>
+                    <a th:href = "@{/employees/{id}(id=${employee.id})}" th:text = "${employee.name}">name</a>
+                </td>
+                <td th:text = "${employee.jobTitle}">rank</td>
+                <td th:text = "${employee.salary}">salary</td>
+                <td th:text = "${employee.dateOfEntry}">date of entry</td>
+                <td>
+                    <a th:href = "@{/deleteEmployee/{id}(id=${employee.getId})}">
+                        <button>delete</button>
+                    </a>
+                </td>
             </tr>
         </tbody>
     </table>
@@ -34,9 +39,9 @@
     <form th:action = "@{/employees}" method = "post" th:object="${newEmployee}">
         <label>Id: </label><input th:field = "*{id}"/> <br/>
         <label>Name: </label><input th:field = "*{name}"/> <br/>
-        <label>Rank: </label><input th:field = "*{rank}"/> <br/>
+        <label>Rank: </label><input th:field = "*{jobTitle}"/> <br/>
         <label>Salary: </label><input th:field = "*{salary}"/> <br/>
-        <label>Date of Entry: </label><input type="datetime-local" th:field="*{dateOfEntry}"/> <br/>
+        <label>Date of Entry: </label><input th:field="*{dateOfEntry}"/> <br/>
         <input type = "submit" value = "add"/>
     </form>
 </body>

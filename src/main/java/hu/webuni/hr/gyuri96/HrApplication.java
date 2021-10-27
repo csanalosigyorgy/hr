@@ -26,9 +26,9 @@ public class HrApplication implements CommandLineRunner {
 	}
 
 	@Override
-	public void run(String... args) throws Exception {
+	public void run(String... args) {
 
-		Smart smartConfiguration = configuration.getSalary().getSmart();
+		Smart smartConfiguration = configuration.getSalary().getASmart();
 		for (Double limit : smartConfiguration.getLimits().keySet()) {
 
 			int originalSalary = 1000;

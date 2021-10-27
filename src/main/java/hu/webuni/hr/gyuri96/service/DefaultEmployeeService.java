@@ -4,10 +4,10 @@ import org.springframework.stereotype.Service;
 import hu.webuni.hr.gyuri96.model.Employee;
 
 @Service
-public class DefaultEmployeeService implements EmployeeService {
+public class DefaultEmployeeService extends BaseEmployeeService {
 
 	@Override
 	public int getPayRisePercent(Employee employee) {
-		return 5;
+		return hrConfogurationProperties.getSalary().getADefault().getPercent();
 	}
 }

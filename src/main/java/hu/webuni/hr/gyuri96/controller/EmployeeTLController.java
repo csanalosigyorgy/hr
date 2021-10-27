@@ -6,24 +6,21 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 
-import hu.webuni.hr.gyuri96.dto.EmployeeDTO;
 import hu.webuni.hr.gyuri96.model.Employee;
 
 @Controller
 public class EmployeeTLController {
 
-	List<EmployeeDTO> allEmployees = new ArrayList<>();
+	List<Employee> allEmployees = new ArrayList<>();
 
 	{
-		allEmployees.add(new EmployeeDTO(1, "Kiss János", "employee", 1000, LocalDateTime.of(2020, 10, 5, 0, 0)));
-		allEmployees.add(new EmployeeDTO(2, "Varga Piroska", "team leader", 1625, LocalDateTime.of(2016, 4, 18, 0, 0)));
-		allEmployees.add(new EmployeeDTO(3, "Fekete Márk", "employee", 1150, LocalDateTime.of(2019, 12, 2, 0, 0)));
+		allEmployees.add(new Employee(1, "Kiss János", "employee", 1000, LocalDateTime.of(2020, 10, 5, 0, 0)));
+		allEmployees.add(new Employee(2, "Varga Piroska", "team leader", 1625, LocalDateTime.of(2016, 4, 18, 0, 0)));
+		allEmployees.add(new Employee(3, "Fekete Márk", "employee", 1150, LocalDateTime.of(2019, 12, 2, 0, 0)));
 	}
 
 	@GetMapping("/employees")
@@ -34,20 +31,31 @@ public class EmployeeTLController {
 	}
 
 	@PostMapping("/employees")
-	public String addEmployee(EmployeeDTO employee) {
+	public String addEmployee(Employee employee) {
 		allEmployees.add(employee);
 		return "redirect:employees";
 	}
 
-	@PutMapping("/modify")
-	public String modifyEmployee(Map<String, Object> model, EmployeeDTO modifiedEmployee){
-		model.put("modifiedEmployee", modifiedEmployee);
-		return "modify";
+	@GetMapping("/deleteEmployee/{id}")
+	public String deleteEmployee(@PathVariable long id){
+		allEmployees.removeIf(e -> e.getId() == id);
+		return "redirect:/employees";
 	}
 
-	@GetMapping("/employees/{employee}")
-	public String deleteEmployee(@PathVariable EmployeeDTO employee) {
-		allEmployees.remove(employee);
+	@GetMapping("/employees/{id}")
+	public String editEmployee(@PathVariable long id, Map<String, Object> model){
+		model.put("employee", allEmployees.stream().filter(e-> e.getId() == id).findFirst().get());
+		return "editEmployee";
+	}
+
+	@PostMapping("/updateEmployee")
+	public String updateEmployee(Employee employee){
+		for(int i = 0; i < allEmployees.size(); i++){
+			if(allEmployees.get(i).getId() == employee.getId()){
+				allEmployees.set(i, employee);
+				break;
+			}
+		}
 		return "redirect:employees";
 	}
 }

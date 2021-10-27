@@ -17,7 +17,7 @@ public class HrConfogurationProperties {
 	@Data
 	public static class Salary {
 		private Default aDefault = new Default();
-		private Smart smart = new Smart();
+		private Smart aSmart = new Smart();
 	}
 
 	@Data

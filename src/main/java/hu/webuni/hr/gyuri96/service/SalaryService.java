@@ -15,6 +15,5 @@ public class SalaryService {
 		int currentSalary = employee.getSalary();
 		int payRisePercent = employeeService.getPayRisePercent(employee);
 		employee.setSalary((int) (currentSalary * (1 + (payRisePercent / 100.0))));
-
 	}
 }

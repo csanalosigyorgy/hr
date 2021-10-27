@@ -1,6 +1,6 @@
 package hu.webuni.hr.gyuri96.model;
 
-import java.time.LocalDateTime;
+import java.util.List;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -9,11 +9,11 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Employee {
+public class Company {
 
 	private long id;
+	private String corporateRegistrationNumber;
 	private String name;
-	private String jobTitle;
-	private int salary;
-	private LocalDateTime dateOfEntry;
+	private String address;
+	private List<Employee> employees;
 }
