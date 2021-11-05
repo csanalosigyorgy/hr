@@ -3,28 +3,34 @@ server:
     context-path: /hr
 
 spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/hr
+    username: postgres
+    password: admin
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update
   profiles:
     active:
       - smart
-
-    thymeleaf:
-          cache: false
-
-    mvc:
-        format:
-            date: yyyy-MM-dd
-            date-time: yyyy-MM-dd HH:mm:ss
+  thymeleaf:
+    cache: false
+  mvc:
+    format:
+      date: yyyy-MM-dd
+      date-time: yyyy-MM-dd HH:mm
 
 hr:
-    salary:
-      a-default:
-          percent: 5
-      a-smart:
-        limits:
-          1: 2
-          2.5: 5
-          5: 10
-          10: 20
-          7.5: 15
-          15: 30
-          25: 40
+  salary:
+    a-default:
+      percent: 5
+    a-smart:
+      limits:
+        1: 2
+        2.5: 5
+        5: 10
+        10: 20
+        7.5: 15
+        15: 30
+        25: 40

@@ -1,19 +1,22 @@
 package hu.webuni.hr.gyuri96.service;
 
+import static java.util.Collections.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.reactive.server.WebTestClient;
-import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.test.web.reactive.server.WebTestClient.ResponseSpec;
 
 import hu.webuni.hr.gyuri96.dto.EmployeeDto;
+
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class EmployeeServiceIT {
@@ -27,12 +30,13 @@ public class EmployeeServiceIT {
 	@Autowired
 	WebTestClient webTestClient;
 
+	// TODO már DB-val, így az id-vel vannak gondok.
 	@Test
 	void createEmployee_newEmployeeIsListed() {
 		List<EmployeeDto> employeesBefore = getAllEmployees();
-		EmployeeDto newEmployee = new EmployeeDto(4L, "Varga Mária", "employee", 1280, LocalDateTime.of(2018, 4, 2, 0,0));
+		EmployeeDto newEmployee = new EmployeeDto(0L, "Varga Mária", "employee", 1280, LocalDate.of(2018, 4, 2), null);
 
-		saveEmployee(newEmployee);
+		saveEmployee(newEmployee).expectStatus().isOk();
 		List<EmployeeDto> employeesAfter = getAllEmployees();
 
 		assertThat(employeesAfter.subList(0, employeesBefore.size()))
@@ -40,27 +44,16 @@ public class EmployeeServiceIT {
 				.containsExactlyElementsOf(employeesBefore);
 
 		assertThat(employeesAfter.get(employeesAfter.size() - 1))
-				.usingRecursiveComparison()
+				.usingRecursiveComparison().ignoringFields("id")
 				.isEqualTo(newEmployee);
 	}
-
-	// TODO!
-//	@Test
-//	void createEmployeeWithFutureEntryDate_getValidationException() {
-//		try {
-//			EmployeeDto newEmployee = new EmployeeDto(4L, "Varga Mária", "employee", 1280, LocalDateTime.of(2044, 4, 2, 0, 0));
-//			saveEmployee(newEmployee);
-//		} catch (Exception e){
-//			assertThat(e).isInstanceOf(MethodArgumentNotValidException.class);
-//		}
-//	}
 
 	@Test
 	void updateEmployee_updatedEmployeeIsListedProperly() {
 		EmployeeDto selectedEmployeeBefore = getSelectedEmployee(SELECTED_ID);
 		selectedEmployeeBefore.setSalary(NEW_SALARY);
 
-		updateEmployee(selectedEmployeeBefore);
+		updateEmployee(selectedEmployeeBefore).expectStatus().isOk();
 		EmployeeDto selectedEmployeeAfter = getSelectedEmployee(SELECTED_ID);
 
 		assertThat(selectedEmployeeAfter.getSalary())
@@ -72,15 +65,15 @@ public class EmployeeServiceIT {
 		return employees.get(id - 1);
 	}
 
-	private void updateEmployee(EmployeeDto selectedEmployee) {
-		webTestClient
+	private ResponseSpec updateEmployee(EmployeeDto selectedEmployee) {
+		return webTestClient
 				.put()
 				.uri(uriBuilder -> uriBuilder
 						.path(URI_ID)
 						.build(selectedEmployee.getId()))
 				.bodyValue(selectedEmployee)
-				.exchange()
-				.expectStatus().isOk();
+				.exchange();
+
 	}
 
 	private List<EmployeeDto> getAllEmployees() {
@@ -93,16 +86,15 @@ public class EmployeeServiceIT {
 				.returnResult()
 				.getResponseBody();
 
-		Collections.sort(response, Comparator.comparingLong(EmployeeDto::getId));
+		Objects.requireNonNull(response).sort(Comparator.comparingLong(EmployeeDto::getId));
 		return response;
 	}
 
-	private void saveEmployee(EmployeeDto newEmployee) {
-		webTestClient
+	private ResponseSpec saveEmployee(EmployeeDto newEmployee) {
+		return webTestClient
 				.post()
 				.uri(URI)
 				.bodyValue(newEmployee)
-				.exchange()
-				.expectStatus().isOk();
+				.exchange();
 	}
 }

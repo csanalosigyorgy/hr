@@ -1,6 +1,7 @@
 package hu.webuni.hr.gyuri96.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import hu.webuni.hr.gyuri96.model.Company;
 import hu.webuni.hr.gyuri96.model.Employee;
@@ -9,7 +10,7 @@ public interface CompanyService {
 
 	List<Company> findAll();
 
-	Company findById(long id);
+	Optional<Company> findById(long id);
 
 	Company save(Company company);
 

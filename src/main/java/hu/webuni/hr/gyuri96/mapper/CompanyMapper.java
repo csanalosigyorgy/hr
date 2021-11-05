@@ -2,11 +2,10 @@ package hu.webuni.hr.gyuri96.mapper;
 
 import java.util.List;
 
-import org.mapstruct.InheritConfiguration;
+import org.mapstruct.IterableMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
-
 
 import hu.webuni.hr.gyuri96.dto.CompanyDto;
 import hu.webuni.hr.gyuri96.model.Company;
@@ -14,22 +13,20 @@ import hu.webuni.hr.gyuri96.model.Company;
 @Mapper(componentModel = "spring", uses = EmployeeMapper.class)
 public interface CompanyMapper {
 
+	@Named("toCompanyDto")
+	@Mapping(target = "employees", qualifiedByName = "toEmployeeDtoIgnoreCompany")
+	CompanyDto toCompanyDto(Company company);
+
+	@IterableMapping(qualifiedByName = "toCompanyDto")
+	List<CompanyDto> toCompanyDtos(List<Company> company);
+
+	@Named("toCompanyDtoIgnoreEmployees")
+	@Mapping(target = "employees", ignore = true)
+	CompanyDto toCompanyDtoIgnoreEmployees(Company company);
+
+	@IterableMapping(qualifiedByName = "toCompanyDtoIgnoreEmployees")
+	List<CompanyDto> toCompanyDtosIgnoreEmployees(List<Company> company);
+
 	Company toCompany(CompanyDto companyDto);
-
-
-	//@Named("detialedCompany")
-	CompanyDto toDto(Company company);
-
-	//@InheritConfiguration(name = "toDto")
-	List<CompanyDto> toDtos(List<Company> company);
-
-
-	@Named("withoutEmployees")
-	@Mapping(target = "CompanyDto.employees", ignore = true)
-	CompanyDto toDtoWithoutEmployees(Company company);
-
-	// TODO itt nem a megfelelő metódust használja a Mappeléshez!
-	@Mapping(target = "employees", qualifiedByName = "withoutEmployees")
-	List<CompanyDto> toDtosWithoutEmployees(List<Company> companies);
 
 }

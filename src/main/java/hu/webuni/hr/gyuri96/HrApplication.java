@@ -1,5 +1,6 @@
 package hu.webuni.hr.gyuri96;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +20,7 @@ public class HrApplication implements CommandLineRunner {
 	SalaryService salaryService;
 
 	@Autowired
-	HrConfogurationProperties configuration;
+	HrConfogurationProperties hrConfig;
 
 	public static void main(String[] args) {
 		SpringApplication.run(HrApplication.class, args);
@@ -28,15 +29,15 @@ public class HrApplication implements CommandLineRunner {
 	@Override
 	public void run(String... args) {
 
-		Smart smartConfiguration = configuration.getSalary().getASmart();
+		Smart smartConfiguration = hrConfig.getSalary().getASmart();
 		for (Double limit : smartConfiguration.getLimits().keySet()) {
 
 			int originalSalary = 1000;
 			System.out.printf("Az eredeti fizetés %d%n", originalSalary);
 
-			LocalDateTime limitDay = LocalDateTime.now().minusDays((long) (limit * 365));
+			LocalDate limitDay = LocalDate.now().minusDays((long) (limit * 365));
 
-			Employee employee = new Employee(1L, "Füredi Anita", "employee", originalSalary, limitDay.plusDays(1));
+			Employee employee = new Employee(1L, "Füredi Anita", "employee", originalSalary, limitDay.plusDays(1), null);
 			salaryService.setNewSalary(employee);
 			System.out.printf("1 nappal a %.2f éves határ előtt az új fizetés %d%n", limit, employee.getSalary());
 

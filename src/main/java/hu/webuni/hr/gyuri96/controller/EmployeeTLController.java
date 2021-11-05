@@ -1,5 +1,6 @@
 package hu.webuni.hr.gyuri96.controller;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,9 +19,9 @@ public class EmployeeTLController {
 	List<Employee> allEmployees = new ArrayList<>();
 
 	{
-		allEmployees.add(new Employee(1, "Kiss János", "employee", 1000, LocalDateTime.of(2020, 10, 5, 0, 0)));
-		allEmployees.add(new Employee(2, "Varga Piroska", "team leader", 1625, LocalDateTime.of(2016, 4, 18, 0, 0)));
-		allEmployees.add(new Employee(3, "Fekete Márk", "employee", 1150, LocalDateTime.of(2019, 12, 2, 0, 0)));
+		allEmployees.add(new Employee(1, "Kiss János", "employee", 1000, LocalDate.of(2020, 10, 5), null));
+		allEmployees.add(new Employee(2, "Varga Piroska", "team leader", 1625, LocalDate.of(2016, 4, 18), null) );
+		allEmployees.add(new Employee(3, "Fekete Márk", "employee", 1150, LocalDate.of(2019, 12, 2), null));
 	}
 
 	@GetMapping("/employees")
