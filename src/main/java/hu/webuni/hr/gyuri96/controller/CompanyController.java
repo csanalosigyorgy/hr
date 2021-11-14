@@ -22,6 +22,7 @@ import hu.webuni.hr.gyuri96.dto.CompanyDto;
 import hu.webuni.hr.gyuri96.dto.EmployeeDto;
 import hu.webuni.hr.gyuri96.mapper.CompanyMapper;
 import hu.webuni.hr.gyuri96.mapper.EmployeeMapper;
+import hu.webuni.hr.gyuri96.model.AverageSalaryByPosition;
 import hu.webuni.hr.gyuri96.model.Company;
 import hu.webuni.hr.gyuri96.service.CompanyService;
 
@@ -97,6 +98,26 @@ public class CompanyController {
 	@DeleteMapping("/{companyId}/employees/{employeeId}")
 	public CompanyDto deleteEmployee(@PathVariable Long companyId, @PathVariable Long employeeId){
 		return companyMapper.toCompanyDto(companyService.deleteEmployee(companyId, employeeId));
+	}
+
+	@GetMapping("/employees/salary")
+	public List<CompanyDto> getCompaniesHaveEmployeeEarnMoreThanLimit(@RequestParam int limit){
+		return companyMapper.toCompanyDtos(companyService.findByHaveEmployeeEarnMoreThen(limit));
+	}
+
+	@GetMapping("/employees/size")
+	public List<CompanyDto> getCompaniesHaveMorEmployeeThan(@RequestParam int limit){
+		return companyMapper.toCompanyDtos(companyService.findByNumberOfEmployeesGreaterThan(limit));
+	}
+
+//	@GetMapping("{companyId}/employees/salary/summary")
+//	public Map<String, Double> getSalarySummaryGroupByEmployeeJobTitle(@PathVariable long companyId){
+//		return companyService.getSalarySummaryByJobTitle(companyId);
+//	}
+
+	@GetMapping("/{companyId}/summary")
+	public List<AverageSalaryByPosition> createSummaryReport(@PathVariable long companyId){
+		return companyService.getSalarySummaryByJobTitle(companyId);
 	}
 
 }

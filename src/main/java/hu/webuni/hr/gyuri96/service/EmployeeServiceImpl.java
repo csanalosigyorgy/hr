@@ -1,7 +1,6 @@
 package hu.webuni.hr.gyuri96.service;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Objects;
@@ -10,6 +9,9 @@ import java.util.Optional;
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.validation.ObjectError;
 
 import hu.webuni.hr.gyuri96.configuration.DateTimeFormatConfigurationProperties;
 import hu.webuni.hr.gyuri96.configuration.HrConfogurationProperties;
@@ -63,13 +65,13 @@ public abstract class EmployeeServiceImpl implements EmployeeService {
 	}
 
 	@Override
-	public List<Employee> findByAboveSalaryLimit(int limit){
-		return employeeRepository.findBySalaryGreaterThan(limit);
+	public List<Employee> findByAboveSalaryLimit(int limit, Pageable page){
+		return employeeRepository.findBySalaryGreaterThan(limit, page).getContent();
 	}
 
 	@Override
-	public List<Employee> findByJobTitle(String jobTitle) {
-		return employeeRepository.findByJobTitle(jobTitle);
+	public List<Employee> findByJobTitle(String positionName) {
+		return employeeRepository.findByPositionName(positionName);
 	}
 
 	@Override
@@ -78,12 +80,8 @@ public abstract class EmployeeServiceImpl implements EmployeeService {
 	}
 
 	@Override
-	public List<Employee> findByDateOfEntryBetween(String from, String to) {
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern(dateTimeFormatterConfig.getMvc().getFormat().getDate());
-		LocalDate parsedFrom = LocalDate.parse(from, formatter);
-		LocalDate parsedTo = LocalDate.parse(to, formatter);
-
-		return employeeRepository.findByDateOfEntryBetween(parsedFrom, parsedTo);
+	public List<Employee> findByDateOfEntryBetween(LocalDate from, LocalDate to) {
+		return employeeRepository.findByDateOfEntryBetween(from, to);
 	}
 
 	private void setCompanyToEmployee(Employee employee, Employee persistedEmployee) {
@@ -94,4 +92,5 @@ public abstract class EmployeeServiceImpl implements EmployeeService {
 			employee.setCompany(company);
 		}
 	}
+
 }

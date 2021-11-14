@@ -2,13 +2,12 @@ package hu.webuni.hr.gyuri96.model;
 
 import static javax.persistence.GenerationType.IDENTITY;
 
-import java.time.LocalDate;
+import java.util.List;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-
-import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -18,7 +17,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Employee {
+public class Position {
 
 	@Id
 	@GeneratedValue(strategy = IDENTITY)
@@ -26,13 +25,9 @@ public class Employee {
 
 	private String name;
 
-	private int salary;
+	private RequiredEducationLevel educationLevel;
 
-	private LocalDate dateOfEntry;
+	@OneToMany(mappedBy = "position")
+	private List<Employee> employees;
 
-	@ManyToOne
-	private Position position;
-
-	@ManyToOne
-	private Company company;
 }

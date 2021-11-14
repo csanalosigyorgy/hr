@@ -5,12 +5,15 @@ import static javax.persistence.GenerationType.IDENTITY;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
 import lombok.AllArgsConstructor;
@@ -33,9 +36,10 @@ public class Company {
 
 	private String address;
 
-	@OneToMany(mappedBy = "company",
-			fetch = LAZY,
-			cascade = CascadeType.ALL)
+	@ManyToOne
+	private LegalEntityType legalEntityType;
+
+	@OneToMany(mappedBy = "company")
 	private List<Employee> employees;
 
 

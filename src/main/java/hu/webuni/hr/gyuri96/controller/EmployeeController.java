@@ -1,11 +1,14 @@
 package hu.webuni.hr.gyuri96.controller;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -59,10 +62,9 @@ public class EmployeeController {
 		return result;
 	}
 
-
 	@GetMapping("/salary")
-	public List<EmployeeDto> getEmployeesAboveSalaryLimit(@RequestParam Integer limit) {
-		return employeeMapper.toEmployeeDtosIgnoreCompany(employeeService.findByAboveSalaryLimit(limit));
+	public List<EmployeeDto> getEmployeesAboveSalaryLimit(@RequestParam Integer limit, Pageable page) {
+		return employeeMapper.toEmployeeDtosIgnoreCompany(employeeService.findByAboveSalaryLimit(limit, page));
 	}
 
 	@GetMapping("/job-title")
@@ -76,7 +78,7 @@ public class EmployeeController {
 	}
 
 	@GetMapping("/entry-date")
-	public List<EmployeeDto> getEmployeesFilterEntryDate(@RequestParam String from, @RequestParam String to) {
+	public List<EmployeeDto> getEmployeesFilterEntryDate(@RequestParam LocalDate from, @RequestParam LocalDate to) {
 		return employeeMapper.toEmployeeDtosIgnoreCompany(employeeService.findByDateOfEntryBetween(from, to));
 	}
 
@@ -102,4 +104,5 @@ public class EmployeeController {
 	public double getSalaryRaisePercent(@RequestBody EmployeeDto employeeDto) {
 		return employeeService.getPayRisePercent(employeeMapper.toEmployee(employeeDto));
 	}
+
 }

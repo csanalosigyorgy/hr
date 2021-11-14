@@ -1,6 +1,8 @@
 package hu.webuni.hr.gyuri96.service;
 
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
@@ -8,6 +10,8 @@ import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import hu.webuni.hr.gyuri96.model.AverageSalaryByPosition;
 import hu.webuni.hr.gyuri96.model.Company;
 import hu.webuni.hr.gyuri96.model.Employee;
 import hu.webuni.hr.gyuri96.repository.CompanyRepository;
@@ -87,6 +91,33 @@ public class CompanyServiceImpl implements CompanyService {
 		company.removeEmployee(employee);
 		return company;
 	}
+
+	@Override
+	public List<Company> findByHaveEmployeeEarnMoreThen(int limit) {
+		return companyRepository.findByEmployeeEarnMoreThen(limit);
+	}
+
+	@Override
+	public List<Company> findByNumberOfEmployeesGreaterThan(int limit) {
+		return companyRepository.findByNumberOfEmployeesGreaterThan(limit);
+	}
+
+	@Override
+	public List<AverageSalaryByPosition> getSalarySummaryByJobTitle(long companyId) {
+		return companyRepository.createSalarySummaryByCompanyId(companyId);
+	}
+
+//	@Override
+//	public Map<String, Double> getSalarySummaryByJobTitle(long companyId) {
+//		List<Object[]> rawData = null; //companyRepository.createSalarySummaryById(1);
+//
+//		Map<String, Double> salarySummary = new LinkedHashMap<>();
+//		for(Object[] o : rawData){
+//			salarySummary.put(o[0].toString(), Double.valueOf(o[1].toString()));
+//		}
+//		return salarySummary;
+//	}
+
 
 	private Company getCompanyOrThrowException(Long companyId) {
 		Optional<Company> optionalCompany = companyRepository.findById(companyId);

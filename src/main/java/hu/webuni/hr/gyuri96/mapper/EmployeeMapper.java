@@ -17,7 +17,7 @@ public interface EmployeeMapper {
 	@Named("toEmployeeDto")
 	@Mapping(target = "company.employees", ignore = true)
 	@Mapping(target = "entryDate", source = "dateOfEntry")
-	@Mapping(target = "rank", source = "jobTitle")
+	@Mapping(target = "rank", source = "position.name")
 	EmployeeDto toEmployeeDto(Employee employee);
 
 	@IterableMapping(qualifiedByName = "toEmployeeDto")
@@ -26,7 +26,7 @@ public interface EmployeeMapper {
 	@Named("toEmployeeDtoIgnoreCompany")
 	@Mapping(target = "company", ignore = true)
 	@Mapping(target = "entryDate", source = "dateOfEntry")
-	@Mapping(target = "rank", source = "jobTitle")
+	@Mapping(target = "rank", source = "position.name")
 	EmployeeDto toEmployeeDtoIgnoreCompany(Employee employee);
 
 	@Named(value = "toEmployeeDtosIgnoreCompany")
@@ -40,4 +40,9 @@ public interface EmployeeMapper {
 
 	@IterableMapping(qualifiedByName = "toEmployee")
 	List<Employee> toEmployees(List<EmployeeDto> employeesDto);
+
+	@Named("toEmployeeIgnoreCompany")
+	@InheritInverseConfiguration(name = "toEmployeeDtoIgnoreCompany")
+	Employee toEmployeeIgnoreCompany(EmployeeDto employeeDto);
+
 }
