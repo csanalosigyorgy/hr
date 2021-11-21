@@ -16,10 +16,11 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.test.web.reactive.server.WebTestClient.ResponseSpec;
 
 import hu.webuni.hr.gyuri96.dto.EmployeeDto;
+import hu.webuni.hr.gyuri96.dto.PositionDto;
 
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class EmployeeServiceIT {
+class EmployeeServiceIT {
 
 	private static final String URI = "/api/employee";
 	private static final String URI_ID = "/api/employee/{id}";
@@ -133,7 +134,7 @@ public class EmployeeServiceIT {
 	}
 
 	private EmployeeDto getValidEmployee(){
-		return new EmployeeDto(0L, "Varga Mária", "employee", 1280, LocalDate.of(2018, 4, 2), null);
+		return new EmployeeDto(0L, "Varga Mária", new PositionDto(0L, "employee",null), 1280, LocalDate.of(2018, 4, 2), null);
 	}
 
 	private EmployeeDto getEmployeeWithMissingRank(){

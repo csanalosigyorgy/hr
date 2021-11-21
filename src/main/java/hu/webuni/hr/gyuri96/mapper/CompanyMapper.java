@@ -2,7 +2,6 @@ package hu.webuni.hr.gyuri96.mapper;
 
 import java.util.List;
 
-import org.mapstruct.InheritInverseConfiguration;
 import org.mapstruct.IterableMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -14,8 +13,10 @@ import hu.webuni.hr.gyuri96.model.Company;
 @Mapper(componentModel = "spring", uses = EmployeeMapper.class)
 public interface CompanyMapper {
 
+
 	@Named("toCompanyDto")
 	@Mapping(target = "employees", qualifiedByName = "toEmployeeDtoIgnoreCompany")
+	@Mapping(target = "legalEntityName", source = "legalEntityType.name")
 	CompanyDto toCompanyDto(Company company);
 
 	@IterableMapping(qualifiedByName = "toCompanyDto")
@@ -23,11 +24,13 @@ public interface CompanyMapper {
 
 	@Named("toCompanyDtoIgnoreEmployees")
 	@Mapping(target = "employees", ignore = true)
+	@Mapping(target = "legalEntityName", source = "legalEntityType.name")
 	CompanyDto toCompanyDtoIgnoreEmployees(Company company);
 
 	@IterableMapping(qualifiedByName = "toCompanyDtoIgnoreEmployees")
 	List<CompanyDto> toCompanyDtosIgnoreEmployees(List<Company> company);
 
+	@Mapping(target = "legalEntityType", ignore = true)
 	Company toCompany(CompanyDto companyDto);
 
 }

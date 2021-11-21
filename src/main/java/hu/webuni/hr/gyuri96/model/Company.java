@@ -14,12 +14,26 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedAttributeNode;
+import javax.persistence.NamedEntityGraph;
+import javax.persistence.NamedSubgraph;
 import javax.persistence.OneToMany;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+@NamedEntityGraph(
+		name = "Company.full",
+		attributeNodes = {
+				@NamedAttributeNode(value = "legalEntityType"),
+				@NamedAttributeNode(value = "employees", subgraph = "subgraph.employees")
+		},
+		subgraphs = {
+				@NamedSubgraph(name = "subgraph.employees",
+								attributeNodes = @NamedAttributeNode(value = "position")
+				)}
+)
 @Entity
 @Data
 @NoArgsConstructor

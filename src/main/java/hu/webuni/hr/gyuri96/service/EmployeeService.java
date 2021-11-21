@@ -4,7 +4,6 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import hu.webuni.hr.gyuri96.model.Employee;
@@ -13,7 +12,7 @@ public interface EmployeeService {
 
 	int getPayRisePercent(Employee employee);
 
-	List<Employee> findAll();
+	List<Employee> findAll(Employee example);
 
 	Optional<Employee> findById(long id);
 

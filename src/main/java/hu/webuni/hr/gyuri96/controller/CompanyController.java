@@ -41,14 +41,9 @@ public class CompanyController {
 
 	@GetMapping
 	public List<CompanyDto> getCompanies(@RequestParam(required = false) Boolean full){
-		List<Company> companies = companyService.findAll();
-		List<CompanyDto> result;
-		if(Objects.isNull(full) || !full){
-			result = companyMapper.toCompanyDtosIgnoreEmployees(companies);
-		} else {
-			result = companyMapper.toCompanyDtos(companies);
-		}
-		return result;
+		return Objects.isNull(full) || !full ?
+				companyMapper.toCompanyDtosIgnoreEmployees(companyService.findAll()) :
+				companyMapper.toCompanyDtos(companyService.findAllWithEmployees());
 	}
 
 	@GetMapping("/{companyId}")
@@ -57,13 +52,9 @@ public class CompanyController {
 		Company company = optionalCompany
 				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
-		CompanyDto result;
-		if(Objects.isNull(full) || !full){
-			result = companyMapper.toCompanyDtoIgnoreEmployees(company);
-		} else {
-			result = companyMapper.toCompanyDto(company);
-		}
-		return result;
+		return Objects.isNull(full) || !full ?
+				companyMapper.toCompanyDtoIgnoreEmployees(company) :
+				companyMapper.toCompanyDto(company);
 	}
 
 	@PostMapping()
@@ -83,6 +74,8 @@ public class CompanyController {
 	public void deleteCompany(@PathVariable Long companyId) {
 		companyService.delete(companyId);
 	}
+
+
 
 	@PostMapping("/{companyId}/employees")
 	public CompanyDto addEmployee(@PathVariable Long companyId, @RequestBody EmployeeDto newEmployee){

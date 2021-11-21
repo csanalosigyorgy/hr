@@ -15,6 +15,7 @@ import org.springframework.validation.ObjectError;
 
 import hu.webuni.hr.gyuri96.configuration.DateTimeFormatConfigurationProperties;
 import hu.webuni.hr.gyuri96.configuration.HrConfogurationProperties;
+import hu.webuni.hr.gyuri96.filter.EmployeeFilter;
 import hu.webuni.hr.gyuri96.model.Company;
 import hu.webuni.hr.gyuri96.model.Employee;
 import hu.webuni.hr.gyuri96.repository.CompanyRepository;
@@ -32,12 +33,17 @@ public abstract class EmployeeServiceImpl implements EmployeeService {
 	protected EmployeeRepository employeeRepository;
 
 	@Autowired
+	protected EmployeeFilter employeeFilter;
+
+	@Autowired
 	protected CompanyRepository companyRepository;
 
 
 	@Override
-	public List<Employee> findAll(){
-		return employeeRepository.findAll();
+	public List<Employee> findAll(Employee example){
+		return (Objects.nonNull(example)) ?
+				employeeFilter.findAllByFilter(example) :
+				employeeRepository.findAll();
 	}
 
 	@Override

@@ -21,8 +21,7 @@ public class EmployeeDto {
 	@NotEmpty
 	private String name;
 
-	@NotEmpty
-	private String rank;
+	private PositionDto position;
 
 	@Min(1)
 	private int salary;

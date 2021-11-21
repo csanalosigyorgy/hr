@@ -2,7 +2,9 @@ package hu.webuni.hr.gyuri96.model;
 
 import static javax.persistence.GenerationType.IDENTITY;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -29,5 +31,13 @@ public class Position {
 
 	@OneToMany(mappedBy = "position")
 	private List<Employee> employees;
+
+	public void addEmployee(Employee employee) {
+		if(Objects.isNull(this.employees)) {
+			this.employees = new ArrayList<>();
+		}
+		this.employees.add(employee);
+		employee.setPosition(this);
+	}
 
 }

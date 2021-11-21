@@ -35,7 +35,7 @@ public class SalaryService {
 	@Transactional
 	public void raiseMinSalary(long companyId, String positionName, int minSalary){
 		positionDetailsByCompanyRepository.findByCompanyIdAndPositionName(companyId, positionName)
-				.forEach(pd -> pd.setMinSalary(minSalary));
+				.ifPresent(pd -> pd.setMinSalary(minSalary));
 
 		employeeRepository.updateSalaries(companyId, positionName, minSalary);
 	}

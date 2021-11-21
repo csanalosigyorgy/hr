@@ -4,6 +4,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.Optional;
 
 import javax.transaction.Transactional;
@@ -14,8 +15,10 @@ import org.springframework.stereotype.Service;
 import hu.webuni.hr.gyuri96.model.AverageSalaryByPosition;
 import hu.webuni.hr.gyuri96.model.Company;
 import hu.webuni.hr.gyuri96.model.Employee;
+import hu.webuni.hr.gyuri96.model.PositionDetailsByCompany;
 import hu.webuni.hr.gyuri96.repository.CompanyRepository;
 import hu.webuni.hr.gyuri96.repository.EmployeeRepository;
+import hu.webuni.hr.gyuri96.repository.PositionDetailsByCompanyRepository;
 
 @Service
 public class CompanyServiceImpl implements CompanyService {
@@ -26,11 +29,20 @@ public class CompanyServiceImpl implements CompanyService {
 	@Autowired
 	private EmployeeRepository employeeRepository;
 
+	@Autowired
+	private PositionDetailsByCompanyRepository positionDetailsByCompanyRepository;
+
 	@Override
 	public List<Company> findAll(){
 		return companyRepository.findAll();
 	}
 
+	@Override
+	public List<Company> findAllWithEmployees(){
+		return companyRepository.findAllWithEmployees();
+	}
+
+	@Transactional
 	@Override
 	public Optional<Company> findById(long id){
 		getCompanyOrThrowException(id);
@@ -40,7 +52,9 @@ public class CompanyServiceImpl implements CompanyService {
 	@Transactional
 	@Override
 	public Company save(Company company){
-		setCompanyToEmployees(company, company.getEmployees());
+		if(Objects.nonNull(company.getEmployees())){
+			setCompanyToEmployees(company, company.getEmployees());
+		}
 		return companyRepository.save(company);
 	}
 
@@ -63,7 +77,11 @@ public class CompanyServiceImpl implements CompanyService {
 	public Company addEmployee(long companyId, Employee employee) {
 		Company company = getCompanyOrThrowException(companyId);
 
+		Optional<PositionDetailsByCompany> positionDetailsOptional = positionDetailsByCompanyRepository.findByCompanyIdAndPositionId(companyId, employee.getPosition().getId());
+		PositionDetailsByCompany positionDetails = positionDetailsOptional.orElseThrow(NoSuchElementException::new);
+
 		employee.setCompany(company);
+		employee.setPosition(positionDetails.getPosition());
 		Optional<Employee> optionalEmployee = employeeRepository.findById(employee.getId());
 		employee = optionalEmployee.orElse(employeeRepository.save(employee));
 

@@ -9,11 +9,20 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedAttributeNode;
+import javax.persistence.NamedEntityGraph;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+
+@NamedEntityGraph(
+		name = "Employee.full",
+		attributeNodes = {
+				@NamedAttributeNode("position"),
+				@NamedAttributeNode("company")
+		})
 @Entity
 @Data
 @NoArgsConstructor

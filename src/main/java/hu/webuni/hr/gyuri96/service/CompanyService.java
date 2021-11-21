@@ -12,6 +12,8 @@ public interface CompanyService {
 
 	List<Company> findAll();
 
+	List<Company> findAllWithEmployees();
+
 	Optional<Company> findById(long id);
 
 	Company save(Company company);

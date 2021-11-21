@@ -37,15 +37,12 @@ public class EmployeeController {
 	EmployeeMapper employeeMapper;
 
 	@GetMapping
-	public List<EmployeeDto> getEmployees(@RequestParam(required = false) Boolean full){
-		List<Employee> employees = employeeService.findAll();
-		List<EmployeeDto> result;
-		if(Objects.isNull(full) || !full){
-			result = employeeMapper.toEmployeeDtosIgnoreCompany(employees);
-		} else {
-			result = employeeMapper.toEmployeeDtos(employees);
-		}
-		return result;
+	public List<EmployeeDto> getEmployees(@RequestParam(required = false) Boolean full, @RequestBody(required = false) Employee example){
+		List<Employee> employees = employeeService.findAll(example);
+
+		return (Objects.isNull(full) || !full) ?
+				employeeMapper.toEmployeeDtosIgnoreCompany(employees) :
+				employeeMapper.toEmployeeDtos(employees);
 	}
 
 	@GetMapping("/{id}")
@@ -53,13 +50,9 @@ public class EmployeeController {
 		Employee employee = employeeService.findById(id)
 				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
-		EmployeeDto result;
-		if(Objects.isNull(full) || !full){
-			result = employeeMapper.toEmployeeDtoIgnoreCompany(employee);
-		} else {
-			result = employeeMapper.toEmployeeDto(employee);
-		}
-		return result;
+		return (Objects.isNull(full) || !full) ?
+				employeeMapper.toEmployeeDtoIgnoreCompany(employee) :
+				employeeMapper.toEmployeeDto(employee);
 	}
 
 	@GetMapping("/salary")

@@ -1,7 +1,6 @@
 package hu.webuni.hr.gyuri96.dto;
 
-import java.util.List;
-
+import hu.webuni.hr.gyuri96.model.RequiredEducationLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -9,17 +8,11 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class CompanyDto {
+public class PositionDto {
 
 	private long id;
 
-	private String corporateRegistrationNumber;
-
 	private String name;
 
-	private String address;
-
-	private String legalEntityName;
-
-	private List<EmployeeDto> employees;
+	private RequiredEducationLevel educationLevel;
 }

@@ -33,7 +33,7 @@ public class InitDBService {
 	private CompanyRepository companyRepository;
 
 	@Autowired
-	private PositionRepository positonRepository;
+	private PositionRepository positionRepository;
 
 	@Autowired
 	private LegalEntityTypeRepository legalEntityTypeRepository;
@@ -41,6 +41,7 @@ public class InitDBService {
 	@Autowired
 	private PositionDetailsByCompanyRepository positionDetailsByCompanyRepository;
 
+	@Transactional
 	public void clearDB(){
 		employeeRepository.deleteAll();
 		companyRepository.deleteAll();
@@ -57,7 +58,7 @@ public class InitDBService {
 		torleyPositions.add(torleyFactoryWorker);
 		Position torleyShiftManager = new Position(0L, "Shift Manager", UNIVERSITY, null);
 		torleyPositions.add(torleyShiftManager);
-		positonRepository.saveAll(torleyPositions);
+		positionRepository.saveAll(torleyPositions);
 
 		Company torley = new Company(0L, "01-09-883786", "Törley Pezsgőpincészet Kft.", "1222 Budapest, Háros u. 2-6.", kft, null);
 		companyRepository.save(torley);

@@ -2,18 +2,21 @@ package hu.webuni.hr.gyuri96.repository;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 import javax.transaction.Transactional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
 import hu.webuni.hr.gyuri96.model.Employee;
 
-public interface EmployeeRepository extends JpaRepository<Employee, Long> {
+public interface EmployeeRepository extends JpaRepository<Employee, Long>, JpaSpecificationExecutor<Employee> {
 
 	List<Employee> findBySalaryGreaterThan(Integer minSalary);
 
@@ -24,6 +27,14 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
 	List<Employee> findByNameStartingWithIgnoreCase(String name);
 
 	List<Employee> findByDateOfEntryBetween(LocalDate from, LocalDate to);
+
+	@EntityGraph("Employee.full")
+	@Query("SELECT e FROM Employee e")
+	List<Employee> findAll();
+
+	@EntityGraph("Employee.full")
+	@Query("SELECT e FROM Employee e WHERE e.id = :id")
+	Optional<Employee> findById(long id);
 
 	@Modifying
 	@Transactional
