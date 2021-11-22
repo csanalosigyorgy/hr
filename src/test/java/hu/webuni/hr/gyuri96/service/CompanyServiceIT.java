@@ -57,28 +57,36 @@ class CompanyServiceIT {
 
 	private static final String BASE_URI = "/api/company/";
 
+	private static long companyId;
+
 	@Autowired
 	WebTestClient webTestClient;
 
 	@BeforeEach
-	@Transactional
 	void setDb() {
-		LegalEntityType kft = new LegalEntityType(1, "Kft.");
+		employeeRepository.deleteAll();
+		companyRepository.deleteAll();
+		positionRepository.deleteAll();
+		legalEntityTypeRepository.deleteAll();
+
+		LegalEntityType kft = new LegalEntityType(0L, "Kft.");
 		legalEntityTypeRepository.save(kft);
 
 		List<Position> torleyPositions = new ArrayList<>();
-		Position torleyFactoryWorker = new Position(1L, "Factory worker", HIGH_SCHOOL, null);
+		Position torleyFactoryWorker = new Position(0L, "Factory worker", HIGH_SCHOOL, null);
 		torleyPositions.add(torleyFactoryWorker);
 		positionRepository.saveAll(torleyPositions);
 
-		Company torley = new Company(1L, "01-09-883786", "Törley Pezsgőpincészet", "1222 Budapest, Háros u. 2-6.", kft, null);
+		Company torley = new Company(0L, "01-09-883786", "Törley Pezsgőpincészet", "1222 Budapest, Háros u. 2-6.", kft, null);
 		companyRepository.save(torley);
 
-		Employee papaiMarika = new Employee(1L, "Pápai Mária", 1890, LocalDate.of(2016, 7, 18), null, null);
+		companyId = torley.getId();
+
+		Employee papaiMarika = new Employee(0L, "Pápai Mária", 1890, LocalDate.of(2016, 7, 18), null, null);
 		torley.addEmployee(papaiMarika);
 		torleyFactoryWorker.addEmployee(papaiMarika);
 
-		Employee vargaTamas = new Employee(2L, "Varga Tamás", 1280, LocalDate.of(2018, 4, 2), null, null);
+		Employee vargaTamas = new Employee(0L, "Varga Tamás", 1280, LocalDate.of(2018, 4, 2), null, null);
 		torley.addEmployee(vargaTamas);
 		torleyFactoryWorker.addEmployee(vargaTamas);
 
@@ -87,19 +95,9 @@ class CompanyServiceIT {
 		positionDetailsByCompanyRepository.save(new PositionDetailsByCompany(0L, 1250, torley, torleyFactoryWorker));
 	}
 
-	@AfterEach
-	@Transactional
-	void clearDb(){
-		employeeRepository.deleteAll();
-		companyRepository.deleteAll();
-		positionRepository.deleteAll();
-		legalEntityTypeRepository.deleteAll();
-	}
-
 	@Test
-	@Transactional
 	void createNewEmployee_newEmployeeIsListed() {
-		long companyId = 1L;
+
 		boolean full = true;
 
 		CompanyDto company = findCompanyById(companyId, full);
