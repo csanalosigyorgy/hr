@@ -1,5 +1,6 @@
 package hu.webuni.hr.gyuri96.service;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -45,8 +46,12 @@ public class CompanyServiceImpl implements CompanyService {
 	@Transactional
 	@Override
 	public Optional<Company> findById(long id){
-		getCompanyOrThrowException(id);
 		return companyRepository.findById(id);
+	}
+
+	@Override
+	public Optional<Company> findByIdWithEmployees(long id) {
+		return companyRepository.findByIdWithEmployees(id);
 	}
 
 	@Transactional
@@ -92,10 +97,16 @@ public class CompanyServiceImpl implements CompanyService {
 	@Transactional
 	@Override
 	public Company replaceAllEmployees(long companyId, List<Employee> employees) {
+		// TODO -> El kell menteni az új employee-kat
+		// TODO -> csekkolni kell, hogy van-e ilyen munkakör!
+		// TODO -> le kell cserélni az összes employeet!
+
 		Company company = getCompanyOrThrowException(companyId);
 		company.getEmployees().forEach(employee -> employee.setCompany(null));
+		company.setEmployees(new ArrayList<>());
 
 		setCompanyToEmployees(company, employees);
+		employeeRepository.saveAll(employees);
 		employees.forEach(company::addEmployee);
 		return company;
 	}
@@ -138,7 +149,7 @@ public class CompanyServiceImpl implements CompanyService {
 
 
 	private Company getCompanyOrThrowException(Long companyId) {
-		Optional<Company> optionalCompany = companyRepository.findById(companyId);
+		Optional<Company> optionalCompany = companyRepository.findByIdWithEmployees(companyId);
 		return optionalCompany.orElseThrow(NoSuchElementException::new);
 	}
 

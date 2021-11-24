@@ -5,7 +5,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import javax.transaction.Transactional;
@@ -16,6 +20,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
 import hu.webuni.hr.gyuri96.dto.CompanyDto;
@@ -32,7 +37,9 @@ import hu.webuni.hr.gyuri96.repository.LegalEntityTypeRepository;
 import hu.webuni.hr.gyuri96.repository.PositionDetailsByCompanyRepository;
 import hu.webuni.hr.gyuri96.repository.PositionRepository;
 
+
 @AutoConfigureTestDatabase
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class CompanyServiceIT {
 
@@ -54,26 +61,19 @@ class CompanyServiceIT {
 	@Autowired
 	private PositionMapper positionMapper;
 
-
 	private static final String BASE_URI = "/api/company/";
-
-	private static long companyId;
+	private long companyId;
 
 	@Autowired
 	WebTestClient webTestClient;
 
 	@BeforeEach
 	void setDb() {
-		employeeRepository.deleteAll();
-		companyRepository.deleteAll();
-		positionRepository.deleteAll();
-		legalEntityTypeRepository.deleteAll();
-
 		LegalEntityType kft = new LegalEntityType(0L, "Kft.");
 		legalEntityTypeRepository.save(kft);
 
 		List<Position> torleyPositions = new ArrayList<>();
-		Position torleyFactoryWorker = new Position(0L, "Factory worker", HIGH_SCHOOL, null);
+		Position torleyFactoryWorker = new Position(1L, "Factory worker", HIGH_SCHOOL, null);
 		torleyPositions.add(torleyFactoryWorker);
 		positionRepository.saveAll(torleyPositions);
 
@@ -82,11 +82,11 @@ class CompanyServiceIT {
 
 		companyId = torley.getId();
 
-		Employee papaiMarika = new Employee(0L, "Pápai Mária", 1890, LocalDate.of(2016, 7, 18), null, null);
+		Employee papaiMarika = new Employee(0L, "Pápai Mária", 1890, LocalDate.of(2016, 7, 18), torleyFactoryWorker, torley);
 		torley.addEmployee(papaiMarika);
 		torleyFactoryWorker.addEmployee(papaiMarika);
 
-		Employee vargaTamas = new Employee(0L, "Varga Tamás", 1280, LocalDate.of(2018, 4, 2), null, null);
+		Employee vargaTamas = new Employee(0L, "Varga Tamás", 1280, LocalDate.of(2018, 4, 2), torleyFactoryWorker, torley);
 		torley.addEmployee(vargaTamas);
 		torleyFactoryWorker.addEmployee(vargaTamas);
 
@@ -97,25 +97,57 @@ class CompanyServiceIT {
 
 	@Test
 	void createNewEmployee_newEmployeeIsListed() {
-
 		boolean full = true;
 
 		CompanyDto company = findCompanyById(companyId, full);
-//		CompanyDto company = new CompanyDto();
-//		company.setId(1L);
 		EmployeeDto newEmployee = createNewEmployee(company);
-
 		CompanyDto companyWithNewEmployee = addNewEmployee(companyId, newEmployee);
-
 		EmployeeDto newEmployeeInCompany = companyWithNewEmployee.getEmployees().get(companyWithNewEmployee.getEmployees().size() - 1);
 
-		assertThat(newEmployee).usingRecursiveComparison().ignoringFields("id")
+		assertThat(company.getEmployees().size()).isEqualTo(companyWithNewEmployee.getEmployees().size() - 1);
+
+		assertThat(newEmployee).usingRecursiveComparison().ignoringFields("id", "company")
 				.isEqualTo(newEmployeeInCompany);
 	}
 
 	EmployeeDto createNewEmployee(CompanyDto company){
-		Position position = positionRepository.getById(1L);
+		Optional<Position> positionOptional = positionRepository.findById(1L);
+		Position position = positionOptional.orElseThrow(NoSuchElementException::new);
 		return new EmployeeDto(0L, "Bíró János", positionMapper.toPositionDto(position), 1250, LocalDate.of(2021, 11, 15), company);
+	}
+
+	@Test
+	void replaceAllEmployees_replacedEmployeesAreNotListedAnymore(){
+		boolean full = true;
+
+		CompanyDto company = findCompanyById(companyId, full);
+
+		EmployeeDto newEmployee = createNewEmployee(company);
+		CompanyDto companyAfterRest = replaceAllEmployees(companyId, List.of(newEmployee));
+
+		CompanyDto companyWithNewEmployees = findCompanyById(companyId, full);
+
+		assertThat(companyAfterRest.getEmployees()).containsExactlyElementsOf(companyWithNewEmployees.getEmployees());
+
+	}
+
+	@Test
+	void removeEmployee_removedEmployeeIsNotListedAnymore() {
+		boolean full = true;
+
+		CompanyDto company = findCompanyById(companyId, full);
+
+		EmployeeDto newEmployee = createNewEmployee(company);
+		CompanyDto companyWithNewEmployee = addNewEmployee(companyId, newEmployee);
+		EmployeeDto newEmployeeInCompany = companyWithNewEmployee.getEmployees().get(companyWithNewEmployee.getEmployees().size() - 1);
+
+
+		CompanyDto companyRemovedEmployeeManually = removeEmployee(companyId, newEmployeeInCompany.getId());
+		companyWithNewEmployee.getEmployees().remove(newEmployee);
+
+		CompanyDto companyWithoutEmployee = findCompanyById(companyId, full);
+
+		assertThat(companyRemovedEmployeeManually.getEmployees()).containsExactlyElementsOf(companyWithoutEmployee.getEmployees());
 	}
 
 	private CompanyDto findCompanyById(long companyId, Boolean full){
@@ -136,6 +168,27 @@ class CompanyServiceIT {
 		return webTestClient.post()
 				.uri(BASE_URI + companyId + "/employees")
 				.bodyValue(employeeDto)
+				.exchange()
+				.expectStatus().isOk()
+				.expectBody(CompanyDto.class)
+				.returnResult()
+				.getResponseBody();
+	}
+
+	private CompanyDto removeEmployee(long companyId, long employeeId){
+		return webTestClient.delete()
+				.uri(BASE_URI + companyId + "/employees/" + employeeId)
+				.exchange()
+				.expectStatus().isOk()
+				.expectBody(CompanyDto.class)
+				.returnResult()
+				.getResponseBody();
+	}
+
+	private CompanyDto replaceAllEmployees(long companyId, List<EmployeeDto> employees){
+		return webTestClient.put()
+				.uri(BASE_URI + companyId + "/employees")
+				.bodyValue(employees)
 				.exchange()
 				.expectStatus().isOk()
 				.expectBody(CompanyDto.class)

@@ -1,23 +1,12 @@
 package hu.webuni.hr.gyuri96;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-import hu.webuni.hr.gyuri96.configuration.HrConfogurationProperties;
-import hu.webuni.hr.gyuri96.configuration.HrConfogurationProperties.Smart;
-import hu.webuni.hr.gyuri96.model.Employee;
+import hu.webuni.hr.gyuri96.configuration.HrConfigurationProperties;
 import hu.webuni.hr.gyuri96.repository.CompanyRepository;
-import hu.webuni.hr.gyuri96.service.CompanyService;
 import hu.webuni.hr.gyuri96.service.InitDBService;
 import hu.webuni.hr.gyuri96.service.SalaryService;
 
@@ -28,7 +17,7 @@ public class HrApplication implements CommandLineRunner {
 	SalaryService salaryService;
 
 	@Autowired
-	HrConfogurationProperties hrConfig;
+	HrConfigurationProperties hrConfig;
 
 	@Autowired
 	InitDBService initDBService;

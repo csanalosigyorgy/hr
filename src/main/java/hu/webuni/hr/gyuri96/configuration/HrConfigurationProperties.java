@@ -10,7 +10,7 @@ import lombok.Data;
 @Configuration
 @ConfigurationProperties(prefix = "hr")
 @Data
-public class HrConfogurationProperties {
+public class HrConfigurationProperties {
 
 	private Salary salary = new Salary();
 
@@ -22,7 +22,7 @@ public class HrConfogurationProperties {
 
 	@Data
 	public static class Default {
-		private int percent;
+		private int percentage;
 	}
 
 	@Data

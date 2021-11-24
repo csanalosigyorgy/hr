@@ -41,20 +41,20 @@ public class CompanyController {
 
 	@GetMapping
 	public List<CompanyDto> getCompanies(@RequestParam(required = false) Boolean full){
-		return Objects.isNull(full) || !full ?
+		return checkFull(full) ?
 				companyMapper.toCompanyDtosIgnoreEmployees(companyService.findAll()) :
 				companyMapper.toCompanyDtos(companyService.findAllWithEmployees());
 	}
 
 	@GetMapping("/{companyId}")
 	public CompanyDto getCompanyById(@RequestParam(required = false) Boolean full, @PathVariable Long companyId){
-		Optional<Company> optionalCompany = companyService.findById(companyId);
-		Company company = optionalCompany
-				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+		return checkFull(full) ?
+				companyMapper.toCompanyDtoIgnoreEmployees(companyService.findById(companyId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND))) :
+				companyMapper.toCompanyDto(companyService.findByIdWithEmployees(companyId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND)));
+	}
 
-		return Objects.isNull(full) || !full ?
-				companyMapper.toCompanyDtoIgnoreEmployees(company) :
-				companyMapper.toCompanyDto(company);
+	private boolean checkFull(Boolean full){
+		return Objects.isNull(full) || !full;
 	}
 
 	@PostMapping()

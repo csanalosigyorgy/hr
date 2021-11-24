@@ -16,6 +16,8 @@ public interface CompanyService {
 
 	Optional<Company> findById(long id);
 
+	Optional<Company> findByIdWithEmployees(long id);
+
 	Company save(Company company);
 
 	Company update(Company company);

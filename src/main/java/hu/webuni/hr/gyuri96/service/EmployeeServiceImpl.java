@@ -9,12 +9,10 @@ import java.util.Optional;
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.validation.ObjectError;
 
 import hu.webuni.hr.gyuri96.configuration.DateTimeFormatConfigurationProperties;
-import hu.webuni.hr.gyuri96.configuration.HrConfogurationProperties;
+import hu.webuni.hr.gyuri96.configuration.HrConfigurationProperties;
 import hu.webuni.hr.gyuri96.filter.EmployeeFilter;
 import hu.webuni.hr.gyuri96.model.Company;
 import hu.webuni.hr.gyuri96.model.Employee;
@@ -24,7 +22,7 @@ import hu.webuni.hr.gyuri96.repository.EmployeeRepository;
 public abstract class EmployeeServiceImpl implements EmployeeService {
 
 	@Autowired
-	protected HrConfogurationProperties hrConfog;
+	protected HrConfigurationProperties hrConfog;
 
 	@Autowired
 	protected DateTimeFormatConfigurationProperties dateTimeFormatterConfig;

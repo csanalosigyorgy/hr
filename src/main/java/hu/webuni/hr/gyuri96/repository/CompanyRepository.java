@@ -12,20 +12,20 @@ import hu.webuni.hr.gyuri96.model.Company;
 
 public interface CompanyRepository extends JpaRepository<Company, Long> {
 
-	@Override
-	@EntityGraph("Company.full")
+	@EntityGraph("Company.summary")
+	@Query("SELECT DISTINCT c FROM Company c ORDER BY c.id")
 	List<Company> findAll();
 
-	@EntityGraph("Company.full")
-	Optional<Company>findById(long id);
+	@EntityGraph("Company.summary")
+	Optional<Company>findById(Long id);
 
-	@EntityGraph("Company.full")
-	@Query("SELECT c FROM Company c")
+	@EntityGraph("Company.withEmployees")
+	@Query("SELECT DISTINCT c FROM Company c ORDER BY c.id")
 	List<Company> findAllWithEmployees();
 
-	@EntityGraph("Company.full")
+	@EntityGraph("Company.withEmployees")
 	@Query("SELECT c FROM Company c WHERE c.id = :id")
-	Optional<Company> findByIdWithEmployees(long id);
+	Optional<Company> findByIdWithEmployees(Long id);
 
 	@Query("SELECT DISTINCT c FROM Company c JOIN Employee e WHERE e.salary > :minSalary")
 	List<Company> findByEmployeeEarnMoreThen(int minSalary);

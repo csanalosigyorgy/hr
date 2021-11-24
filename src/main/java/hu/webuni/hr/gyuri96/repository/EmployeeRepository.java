@@ -34,7 +34,11 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long>, JpaSp
 
 	@EntityGraph("Employee.full")
 	@Query("SELECT e FROM Employee e WHERE e.id = :id")
-	Optional<Employee> findById(long id);
+	Optional<Employee> findById(Long id);
+
+	@EntityGraph("Employee.full")
+	Optional<Employee> findByIdAndCompanyId(Long companyId, Long employeeId);
+
 
 	@Modifying
 	@Transactional

@@ -5,14 +5,11 @@ import static javax.persistence.GenerationType.IDENTITY;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedAttributeNode;
 import javax.persistence.NamedEntityGraph;
@@ -24,7 +21,11 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @NamedEntityGraph(
-		name = "Company.full",
+		name = "Company.summary",
+		attributeNodes = @NamedAttributeNode(value = "legalEntityType")
+)
+@NamedEntityGraph(
+		name = "Company.withEmployees",
 		attributeNodes = {
 				@NamedAttributeNode(value = "legalEntityType"),
 				@NamedAttributeNode(value = "employees", subgraph = "subgraph.employees")
