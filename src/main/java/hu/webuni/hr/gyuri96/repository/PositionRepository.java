@@ -16,5 +16,6 @@ public interface PositionRepository extends JpaRepository<Position, Long> {
 	@EntityGraph("Position.full")
 	Optional<Position>findById(Long id);
 
+	@EntityGraph("Position.full")
 	List<Position> findByName(String name);
 }

@@ -1,5 +1,6 @@
 package hu.webuni.hr.gyuri96.dto;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import lombok.AllArgsConstructor;
@@ -21,5 +22,5 @@ public class CompanyDto {
 
 	private String legalEntityName;
 
-	private List<EmployeeDto> employees;
+	private List<EmployeeDto> employees = new ArrayList<>();
 }

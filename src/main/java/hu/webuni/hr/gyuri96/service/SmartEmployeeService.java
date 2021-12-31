@@ -14,7 +14,7 @@ public class SmartEmployeeService extends EmployeeServiceImpl {
 
 	@Override
 	public int getPayRisePercent(Employee employee) {
-		TreeMap<Double, Integer> limits = hrConfog.getSalary().getASmart().getLimits();
+		TreeMap<Double, Integer> limits = hrConfig.getSalary().getASmart().getLimits();
 		double yearsWorked = ChronoUnit.DAYS.between(employee.getDateOfEntry(), LocalDateTime.now()) / 365.0;
 		Optional<Double> optionalMax = limits.keySet().stream().filter(l -> yearsWorked >= l).max(Double::compare);
 		return optionalMax.isEmpty() ? 0 : limits.get(optionalMax.get());

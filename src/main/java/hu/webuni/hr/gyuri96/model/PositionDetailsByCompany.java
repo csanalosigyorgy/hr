@@ -3,12 +3,12 @@ package hu.webuni.hr.gyuri96.model;
 import static javax.persistence.GenerationType.IDENTITY;
 
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedAttributeNode;
 import javax.persistence.NamedEntityGraph;
-import javax.persistence.NamedSubgraph;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -34,9 +34,9 @@ public class PositionDetailsByCompany {
 
 	private int minSalary;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	private Company company;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	private Position position;
 }

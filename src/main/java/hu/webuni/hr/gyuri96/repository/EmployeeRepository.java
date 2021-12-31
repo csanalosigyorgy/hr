@@ -8,6 +8,7 @@ import javax.transaction.Transactional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
@@ -28,17 +29,29 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long>, JpaSp
 
 	List<Employee> findByDateOfEntryBetween(LocalDate from, LocalDate to);
 
+	@Override
 	@EntityGraph("Employee.full")
-	@Query("SELECT e FROM Employee e")
 	List<Employee> findAll();
 
+	@Override
 	@EntityGraph("Employee.full")
-	@Query("SELECT e FROM Employee e WHERE e.id = :id")
+	List<Employee> findAll(Specification<Employee> spec);
+
+	@Override
+	@EntityGraph("Employee.full")
 	Optional<Employee> findById(Long id);
+
+	@EntityGraph(attributePaths = {"company", "position", "holidayRequests"})
+	@Query("select e from Employee e where e.id = ?1")
+	Optional<Employee> findByIdDetailed(Long id);
+
+
+	@EntityGraph(attributePaths = "holidayRequests")
+	@Query("select e from Employee e where e.id = ?1")
+	Optional<Employee> findByIdWithHolidayRequest(Long id);
 
 	@EntityGraph("Employee.full")
 	Optional<Employee> findByIdAndCompanyId(Long companyId, Long employeeId);
-
 
 	@Modifying
 	@Transactional
@@ -47,4 +60,6 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long>, JpaSp
 			"WHERE e2.position.name = :positionName AND e2.company.id = :companyId And e2.salary < :minSalary)")
 	void updateSalaries(long companyId, String positionName, int minSalary);
 
+	@Query("SELECT e FROM Employee e WHERE e.username = :username")
+	Optional<Employee> findByUsername(String username);
 }

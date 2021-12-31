@@ -98,4 +98,8 @@ public class EmployeeController {
 		return employeeService.getPayRisePercent(employeeMapper.toEmployee(employeeDto));
 	}
 
+	@PostMapping("/search")
+	public List<EmployeeDto> searchEmployee(@RequestBody EmployeeDto example){
+		return employeeMapper.toEmployeeDtos(employeeService.findAll(employeeMapper.toEmployee(example)));
+	}
 }

@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Objects;
 
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
@@ -31,8 +32,9 @@ import lombok.NoArgsConstructor;
 				@NamedAttributeNode(value = "employees", subgraph = "subgraph.employees")
 		},
 		subgraphs = {
-				@NamedSubgraph(name = "subgraph.employees",
-								attributeNodes = @NamedAttributeNode(value = "position")
+				@NamedSubgraph(
+						name = "subgraph.employees",
+						attributeNodes = @NamedAttributeNode(value = "position")
 				)}
 )
 @Entity
@@ -51,7 +53,7 @@ public class Company {
 
 	private String address;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	private LegalEntityType legalEntityType;
 
 	@OneToMany(mappedBy = "company")

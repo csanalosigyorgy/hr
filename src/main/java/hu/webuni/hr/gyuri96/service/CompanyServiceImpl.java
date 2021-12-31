@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import hu.webuni.hr.gyuri96.model.AverageSalaryByPosition;
 import hu.webuni.hr.gyuri96.model.Company;
 import hu.webuni.hr.gyuri96.model.Employee;
+import hu.webuni.hr.gyuri96.model.Position;
 import hu.webuni.hr.gyuri96.model.PositionDetailsByCompany;
 import hu.webuni.hr.gyuri96.repository.CompanyRepository;
 import hu.webuni.hr.gyuri96.repository.EmployeeRepository;
@@ -32,6 +33,9 @@ public class CompanyServiceImpl implements CompanyService {
 
 	@Autowired
 	private PositionDetailsByCompanyRepository positionDetailsByCompanyRepository;
+
+	@Autowired
+	private EmployeeService employeeService;
 
 	@Override
 	public List<Company> findAll(){
@@ -80,15 +84,18 @@ public class CompanyServiceImpl implements CompanyService {
 	@Transactional
 	@Override
 	public Company addEmployee(long companyId, Employee employee) {
-		Company company = getCompanyOrThrowException(companyId);
+		PositionDetailsByCompany positionDetails = positionDetailsByCompanyRepository.findByCompanyIdAndPositionName(companyId, employee.getPosition().getName())
+				.orElseThrow(NoSuchElementException::new);
+		System.out.println("PositionDetails");
 
-		Optional<PositionDetailsByCompany> positionDetailsOptional = positionDetailsByCompanyRepository.findByCompanyIdAndPositionId(companyId, employee.getPosition().getId());
-		PositionDetailsByCompany positionDetails = positionDetailsOptional.orElseThrow(NoSuchElementException::new);
+		Company company = positionDetails.getCompany();
+		Position position = positionDetails.getPosition();
 
-		employee.setCompany(company);
-		employee.setPosition(positionDetails.getPosition());
+		//employee.setCompany(company);
+		employee.setPosition(position);
 		Optional<Employee> optionalEmployee = employeeRepository.findById(employee.getId());
-		employee = optionalEmployee.orElse(employeeRepository.save(employee));
+		System.out.println("Employee");
+		employee = optionalEmployee.orElse(employeeService.save(employee));
 
 		company.addEmployee(employee);
 		return company;
@@ -105,9 +112,11 @@ public class CompanyServiceImpl implements CompanyService {
 		company.getEmployees().forEach(employee -> employee.setCompany(null));
 		company.setEmployees(new ArrayList<>());
 
-		setCompanyToEmployees(company, employees);
-		employeeRepository.saveAll(employees);
-		employees.forEach(company::addEmployee);
+		employees.forEach(e -> {
+			e.setCompany(company);
+			employeeService.save(e);
+			company.addEmployee(e);
+		});
 		return company;
 	}
 

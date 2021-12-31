@@ -5,16 +5,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
-import javax.transaction.Transactional;
-
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +19,6 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 
 import hu.webuni.hr.gyuri96.dto.CompanyDto;
 import hu.webuni.hr.gyuri96.dto.EmployeeDto;
-import hu.webuni.hr.gyuri96.mapper.PositionMapper;
 import hu.webuni.hr.gyuri96.model.Company;
 import hu.webuni.hr.gyuri96.model.Employee;
 import hu.webuni.hr.gyuri96.model.LegalEntityType;
@@ -58,9 +51,6 @@ class CompanyServiceIT {
 	@Autowired
 	private PositionDetailsByCompanyRepository positionDetailsByCompanyRepository;
 
-	@Autowired
-	private PositionMapper positionMapper;
-
 	private static final String BASE_URI = "/api/company/";
 	private long companyId;
 
@@ -82,11 +72,11 @@ class CompanyServiceIT {
 
 		companyId = torley.getId();
 
-		Employee papaiMarika = new Employee(0L, "Pápai Mária", 1890, LocalDate.of(2016, 7, 18), torleyFactoryWorker, torley);
+		Employee papaiMarika = new Employee("Pápai Mária", 1890, LocalDate.of(2016, 7, 18), torleyFactoryWorker, torley);
 		torley.addEmployee(papaiMarika);
 		torleyFactoryWorker.addEmployee(papaiMarika);
 
-		Employee vargaTamas = new Employee(0L, "Varga Tamás", 1280, LocalDate.of(2018, 4, 2), torleyFactoryWorker, torley);
+		Employee vargaTamas = new Employee("Varga Tamás", 1280, LocalDate.of(2018, 4, 2), torleyFactoryWorker, torley);
 		torley.addEmployee(vargaTamas);
 		torleyFactoryWorker.addEmployee(vargaTamas);
 
@@ -113,7 +103,7 @@ class CompanyServiceIT {
 	EmployeeDto createNewEmployee(CompanyDto company){
 		Optional<Position> positionOptional = positionRepository.findById(1L);
 		Position position = positionOptional.orElseThrow(NoSuchElementException::new);
-		return new EmployeeDto(0L, "Bíró János", positionMapper.toPositionDto(position), 1250, LocalDate.of(2021, 11, 15), company);
+		return new EmployeeDto(0L, "Bíró János", "employee", 1250, LocalDate.of(2021, 11, 15), company);
 	}
 
 	@Test

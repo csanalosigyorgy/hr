@@ -34,6 +34,6 @@ public class EmployeeSpecification {
 	}
 
 	public static Specification<Employee> hasCompanyName(String companyName) {
-		return (root, cq, cb) -> cb.equal(root.get(Employee_.company).get(Company_.name), companyName);
+		return (root, cq, cb) -> cb.like(cb.lower(root.get(Employee_.company).get(Company_.name)), companyName.toLowerCase() + "%");
 	}
 }

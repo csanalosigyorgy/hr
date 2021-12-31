@@ -1,25 +1,28 @@
 package hu.webuni.hr.gyuri96.service;
 
-import static java.util.Collections.*;
+import static hu.webuni.hr.gyuri96.model.RequiredEducationLevel.HIGH_SCHOOL;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalDate;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.test.web.reactive.server.WebTestClient.ResponseSpec;
 
 import hu.webuni.hr.gyuri96.dto.EmployeeDto;
-import hu.webuni.hr.gyuri96.dto.PositionDto;
-
+import hu.webuni.hr.gyuri96.model.Employee;
+import hu.webuni.hr.gyuri96.repository.EmployeeRepository;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@AutoConfigureTestDatabase
 class EmployeeServiceIT {
 
 	private static final String URI = "/api/employee";
@@ -29,9 +32,27 @@ class EmployeeServiceIT {
 	private static final int NEW_SALARY = 1250;
 
 	@Autowired
-	WebTestClient webTestClient;
+	private WebTestClient webTestClient;
 
-	// TODO már DB-val, így az id-vel vannak gondok.
+	@Autowired
+	private PasswordEncoder passwordEncoder;
+
+	@Autowired
+	private EmployeeRepository employeeRepository;
+
+	String username = "user";
+	String pass = "pass";
+
+	@BeforeEach
+	public void init(){
+		if(employeeRepository.findByUsername(username).isEmpty()){
+			Employee employee = new Employee();
+			employee.setUsername(username);
+			employee.setPassword(passwordEncoder.encode(pass));
+			employeeRepository.save(employee);
+		}
+	}
+
 	@Test
 	void createEmployee_newEmployeeIsListed() {
 		List<EmployeeDto> employeesBefore = getAllEmployees();
@@ -72,8 +93,8 @@ class EmployeeServiceIT {
 		updateEmployee(selectedEmployeeBefore).expectStatus().isOk();
 		EmployeeDto selectedEmployeeAfter = getSelectedEmployee(SELECTED_ID);
 
-		assertThat(selectedEmployeeAfter.getSalary())
-				.isEqualTo(NEW_SALARY);
+		assertThat(selectedEmployeeBefore)
+				.isEqualTo(selectedEmployeeAfter);
 	}
 
 	@Test
@@ -107,6 +128,7 @@ class EmployeeServiceIT {
 				.uri(uriBuilder -> uriBuilder
 						.path(URI_ID)
 						.build(selectedEmployee.getId()))
+				.headers(headers -> headers.setBasicAuth(username, pass))
 				.bodyValue(selectedEmployee)
 				.exchange();
 	}
@@ -115,6 +137,7 @@ class EmployeeServiceIT {
 		List<EmployeeDto> response = webTestClient
 				.get()
 				.uri(URI)
+				.headers(headers -> headers.setBasicAuth(username, pass))
 				.exchange()
 				.expectStatus().isOk()
 				.expectBodyList(EmployeeDto.class)
@@ -129,12 +152,13 @@ class EmployeeServiceIT {
 		return webTestClient
 				.post()
 				.uri(URI)
+				.headers(headers -> headers.setBasicAuth(username, pass))
 				.bodyValue(newEmployee)
 				.exchange();
 	}
 
 	private EmployeeDto getValidEmployee(){
-		return new EmployeeDto(0L, "Varga Mária", new PositionDto(0L, "employee",null), 1280, LocalDate.of(2018, 4, 2), null);
+		return new EmployeeDto(0L, "Varga Mária", "Factory worker", 1280, LocalDate.of(2018, 4, 2), null);
 	}
 
 	private EmployeeDto getEmployeeWithMissingRank(){

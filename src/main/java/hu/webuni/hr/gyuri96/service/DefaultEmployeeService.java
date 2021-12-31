@@ -8,6 +8,6 @@ public class DefaultEmployeeService extends EmployeeServiceImpl {
 
 	@Override
 	public int getPayRisePercent(Employee employee) {
-		return hrConfog.getSalary().getADefault().getPercentage();
+		return hrConfig.getSalary().getADefault().getPercentage();
 	}
 }

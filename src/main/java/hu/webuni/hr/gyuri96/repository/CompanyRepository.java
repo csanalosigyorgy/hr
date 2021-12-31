@@ -19,7 +19,8 @@ public interface CompanyRepository extends JpaRepository<Company, Long> {
 	@EntityGraph("Company.summary")
 	Optional<Company>findById(Long id);
 
-	@EntityGraph("Company.withEmployees")
+	//@EntityGraph("Company.withEmployees")
+	@EntityGraph(attributePaths = {"employees", "employees.position", "legalEntityType"}) // Ez egy jó cucc!
 	@Query("SELECT DISTINCT c FROM Company c ORDER BY c.id")
 	List<Company> findAllWithEmployees();
 

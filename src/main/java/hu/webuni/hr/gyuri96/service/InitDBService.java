@@ -10,6 +10,7 @@ import java.util.List;
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import hu.webuni.hr.gyuri96.model.Company;
@@ -41,6 +42,9 @@ public class InitDBService {
 	@Autowired
 	private PositionDetailsByCompanyRepository positionDetailsByCompanyRepository;
 
+	@Autowired
+	private PasswordEncoder passwordEncoder;
+
 	@Transactional
 	public void clearDB(){
 		employeeRepository.deleteAll();
@@ -63,11 +67,12 @@ public class InitDBService {
 		Company torley = new Company(0L, "01-09-883786", "Törley Pezsgőpincészet Kft.", "1222 Budapest, Háros u. 2-6.", kft, null);
 		companyRepository.save(torley);
 
-		torley.addEmployee(new Employee(0L, "Fehér Péter", 3420, LocalDate.of(2012, 5, 19), torleyShiftManager, torley));
-		torley.addEmployee(new Employee(0L, "Vona Mária",  1890, LocalDate.of(2016, 7, 18), torleyFactoryWorker, torley));
-		torley.addEmployee(new Employee(0L, "Varga Tamás",  1280, LocalDate.of(2018, 4, 2), torleyFactoryWorker, torley));
-		torley.addEmployee(new Employee(0L, "Tóth Lívia", 1650, LocalDate.of(2016, 5, 4), torleyFactoryWorker, torley));
-		torley.addEmployee(new Employee(0L, "Érdi Géza",  1760, LocalDate.of(2017, 9, 11), torleyFactoryWorker, torley));
+		Employee feherPeter = new Employee(0L, "Fehér Péter", 3420, LocalDate.of(2012, 5, 19), torleyShiftManager, torley, null, "feher.peter", passwordEncoder.encode("pass"));
+		torley.addEmployee(feherPeter);
+		torley.addEmployee(new Employee(0L, "Vona Mária",  1890, LocalDate.of(2016, 7, 18), torleyFactoryWorker, torley, null, "vona.maria", passwordEncoder.encode("pass")));
+		torley.addEmployee(new Employee("Varga Tamás",  1280, LocalDate.of(2018, 4, 2), torleyFactoryWorker, torley));
+		torley.addEmployee(new Employee("Tóth Lívia", 1650, LocalDate.of(2016, 5, 4), torleyFactoryWorker, torley));
+		torley.addEmployee(new Employee("Érdi Géza",  1760, LocalDate.of(2017, 9, 11), torleyFactoryWorker, torley));
 		employeeRepository.saveAll(torley.getEmployees());
 
 		positionDetailsByCompanyRepository.save(new PositionDetailsByCompany(0L, 1250, torley, torleyFactoryWorker));

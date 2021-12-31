@@ -29,7 +29,7 @@ public class Position {
 
 	@Id
 	@GeneratedValue(strategy = IDENTITY)
-	private long id;
+	private Long id;
 
 	private String name;
 
@@ -37,6 +37,11 @@ public class Position {
 
 	@OneToMany(mappedBy = "position")
 	private List<Employee> employees;
+
+	public Position(String name, RequiredEducationLevel educationLevel) {
+		this.name = name;
+		this.educationLevel = educationLevel;
+	}
 
 	public void addEmployee(Employee employee) {
 		if(Objects.isNull(this.employees)) {

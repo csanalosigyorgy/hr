@@ -22,7 +22,7 @@ import hu.webuni.hr.gyuri96.repository.EmployeeRepository;
 public abstract class EmployeeServiceImpl implements EmployeeService {
 
 	@Autowired
-	protected HrConfigurationProperties hrConfog;
+	protected HrConfigurationProperties hrConfig;
 
 	@Autowired
 	protected DateTimeFormatConfigurationProperties dateTimeFormatterConfig;
@@ -36,6 +36,8 @@ public abstract class EmployeeServiceImpl implements EmployeeService {
 	@Autowired
 	protected CompanyRepository companyRepository;
 
+	@Autowired
+	protected PositionService positionService;
 
 	@Override
 	public List<Employee> findAll(Employee example){
@@ -52,6 +54,7 @@ public abstract class EmployeeServiceImpl implements EmployeeService {
 	@Transactional
 	@Override
 	public Employee save(Employee employee) {
+		positionService.setPositionForEmployee(employee);
 		return employeeRepository.save(employee);
 	}
 
@@ -60,6 +63,7 @@ public abstract class EmployeeServiceImpl implements EmployeeService {
 	public Employee update(Employee employee) {
 		Employee persistedEmployee = employeeRepository.findById(employee.getId()).orElseThrow(NoSuchElementException::new);
 		setCompanyToEmployee(employee, persistedEmployee);
+		positionService.setPositionForEmployee(employee);
 		return employeeRepository.save(employee);
 	}
 

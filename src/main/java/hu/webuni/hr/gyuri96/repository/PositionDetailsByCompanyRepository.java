@@ -9,9 +9,9 @@ import hu.webuni.hr.gyuri96.model.PositionDetailsByCompany;
 
 public interface PositionDetailsByCompanyRepository extends JpaRepository<PositionDetailsByCompany, Long> {
 
-	@EntityGraph("positionByDetails.full")
+	@EntityGraph(attributePaths = {"company", "company.employees", "company.employees.position", "company.legalEntityType", "position"})
 	Optional<PositionDetailsByCompany> findByCompanyIdAndPositionName(long companyId, String positionName);
 
-	@EntityGraph("positionByDetails.full")
+	@EntityGraph(attributePaths = {"company", "company.employees", "company.employees.position", "company.legalEntityType", "position"})
 	Optional<PositionDetailsByCompany> findByCompanyIdAndPositionId(long companyId, long positionId);
 }

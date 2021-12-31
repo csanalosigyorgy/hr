@@ -11,21 +11,22 @@ import org.mapstruct.Named;
 import hu.webuni.hr.gyuri96.dto.EmployeeDto;
 import hu.webuni.hr.gyuri96.model.Employee;
 
-@Mapper(componentModel = "spring", uses = { CompanyMapper.class, PositionMapper.class})
+@Mapper(componentModel = "spring", uses = { CompanyMapper.class })
 public interface EmployeeMapper {
 
 	@Named("toEmployeeDto")
 	@Mapping(target = "company.employees", ignore = true)
-//	@Mapping(target = "position", ignore = true)
+	@Mapping(target = "title", source = "position.name")
 	@Mapping(target = "entryDate", source = "dateOfEntry")
 	EmployeeDto toEmployeeDto(Employee employee);
 
 	@IterableMapping(qualifiedByName = "toEmployeeDto")
 	List<EmployeeDto> toEmployeeDtos(List<Employee> employee);
 
+
 	@Named("toEmployeeDtoIgnoreCompany")
 	@Mapping(target = "company", ignore = true)
-//	@Mapping(target = "position", ignore = true)
+	@Mapping(target = "title", source = "position.name")
 	@Mapping(target = "entryDate", source = "dateOfEntry")
 	EmployeeDto toEmployeeDtoIgnoreCompany(Employee employee);
 

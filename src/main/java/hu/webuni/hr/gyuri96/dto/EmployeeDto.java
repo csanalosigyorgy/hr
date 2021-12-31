@@ -6,6 +6,7 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Past;
+import javax.validation.constraints.Positive;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -21,9 +22,10 @@ public class EmployeeDto {
 	@NotEmpty
 	private String name;
 
-	private PositionDto position;
+	@NotEmpty
+	private String title;
 
-	@Min(1)
+	@Positive
 	private int salary;
 
 	@Past
