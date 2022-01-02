@@ -75,6 +75,7 @@ public class HolidayRequestService {
 	public HolidayRequestDto saveHolidayRequest(HolidayRequestDto holidayRequestDto){
 		HolidayRequest holidayRequest = holidayRequestMapper.toHolidayRequest(holidayRequestDto);
 		Employee employee = employeeRepository.findByIdDetailed(holidayRequestDto.getIssuerId()).orElseThrow(NoSuchElementException::new);
+		holidayRequest.setApprover(employee);
 		holidayRequest.setIssuingDate(LocalDateTime.now());
 		employee.addHolidayRequest(holidayRequest);
 		return holidayRequestMapper.toHolidayRequestDto(holidayRequestRepository.save(holidayRequest));

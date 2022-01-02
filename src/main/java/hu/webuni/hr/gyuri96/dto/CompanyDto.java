@@ -13,14 +13,9 @@ import lombok.NoArgsConstructor;
 public class CompanyDto {
 
 	private long id;
-
 	private String corporateRegistrationNumber;
-
 	private String name;
-
 	private String address;
-
 	private String legalEntityName;
-
 	private List<EmployeeDto> employees = new ArrayList<>();
 }

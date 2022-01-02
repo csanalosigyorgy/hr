@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class HolidayRequestFilterDto {
+
 	private LocalDateTime creationDateTimeStart;
 	private LocalDateTime creationDateTimeEnd;
 	private String issuerName;

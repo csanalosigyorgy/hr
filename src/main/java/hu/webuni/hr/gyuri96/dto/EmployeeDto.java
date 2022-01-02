@@ -18,18 +18,13 @@ import lombok.NoArgsConstructor;
 public class EmployeeDto {
 
 	private long id;
-
 	@NotEmpty
 	private String name;
-
 	@NotEmpty
 	private String title;
-
 	@Positive
 	private int salary;
-
 	@Past
 	private LocalDate entryDate;
-
 	private CompanyDto company;
 }

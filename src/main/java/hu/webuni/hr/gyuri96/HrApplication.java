@@ -33,7 +33,7 @@ public class HrApplication implements CommandLineRunner {
 	public void run(String... args) {
 
 		//initDBService.clearDB();
-		//initDBService.insertTestData();
+		initDBService.insertTestData();
 
 
 //		Smart smartConfiguration = hrConfig.getSalary().getASmart();

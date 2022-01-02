@@ -1,6 +1,5 @@
 package hu.webuni.hr.gyuri96.service;
 
-import static hu.webuni.hr.gyuri96.model.RequiredEducationLevel.HIGH_SCHOOL;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalDate;
@@ -18,6 +17,7 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.test.web.reactive.server.WebTestClient.ResponseSpec;
 
 import hu.webuni.hr.gyuri96.dto.EmployeeDto;
+import hu.webuni.hr.gyuri96.dto.LoginDto;
 import hu.webuni.hr.gyuri96.model.Employee;
 import hu.webuni.hr.gyuri96.repository.EmployeeRepository;
 
@@ -30,6 +30,7 @@ class EmployeeServiceIT {
 
 	private static final int SELECTED_ID = 1;
 	private static final int NEW_SALARY = 1250;
+	private String jwt;
 
 	@Autowired
 	private WebTestClient webTestClient;
@@ -51,10 +52,20 @@ class EmployeeServiceIT {
 			employee.setPassword(passwordEncoder.encode(pass));
 			employeeRepository.save(employee);
 		}
+
+		jwt = webTestClient
+				.post()
+				.uri("/api/login")
+				.bodyValue(new LoginDto(username, pass))
+				.exchange()
+				.expectBody(String.class)
+				.returnResult()
+				.getResponseBody();
 	}
 
 	@Test
 	void createEmployee_newEmployeeIsListed() {
+		System.out.println(jwt);
 		List<EmployeeDto> employeesBefore = getAllEmployees();
 
 		EmployeeDto newEmployee = getValidEmployee();
@@ -128,7 +139,8 @@ class EmployeeServiceIT {
 				.uri(uriBuilder -> uriBuilder
 						.path(URI_ID)
 						.build(selectedEmployee.getId()))
-				.headers(headers -> headers.setBasicAuth(username, pass))
+				//.headers(headers -> headers.setBasicAuth(username, pass))
+				.headers(headers -> headers.setBearerAuth(jwt))
 				.bodyValue(selectedEmployee)
 				.exchange();
 	}
@@ -137,7 +149,8 @@ class EmployeeServiceIT {
 		List<EmployeeDto> response = webTestClient
 				.get()
 				.uri(URI)
-				.headers(headers -> headers.setBasicAuth(username, pass))
+				//.headers(headers -> headers.setBasicAuth(username, pass))
+				.headers(headers -> headers.setBearerAuth(jwt))
 				.exchange()
 				.expectStatus().isOk()
 				.expectBodyList(EmployeeDto.class)
@@ -152,7 +165,8 @@ class EmployeeServiceIT {
 		return webTestClient
 				.post()
 				.uri(URI)
-				.headers(headers -> headers.setBasicAuth(username, pass))
+				//.headers(headers -> headers.setBasicAuth(username, pass))
+				.headers(headers -> headers.setBearerAuth(jwt))
 				.bodyValue(newEmployee)
 				.exchange();
 	}

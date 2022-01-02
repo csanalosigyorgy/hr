@@ -3,9 +3,9 @@ package hu.webuni.hr.gyuri96.model;
 import static javax.persistence.GenerationType.IDENTITY;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -20,7 +20,9 @@ import javax.persistence.OneToMany;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 
 @NamedEntityGraph(
@@ -34,7 +36,8 @@ import lombok.NoArgsConstructor;
 		})
 		})
 @Entity
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class Employee {
@@ -56,7 +59,13 @@ public class Employee {
 	private Company company;
 
 	@OneToMany(mappedBy = "issuer")
-	private List<HolidayRequest> holidayRequests;
+	private Set<HolidayRequest> holidayRequests;
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	private Employee manager;
+
+	@OneToMany(mappedBy = "manager")
+	private Set<Employee> managedEmployees;
 
 	private String username;
 
@@ -72,7 +81,7 @@ public class Employee {
 
 	public void addHolidayRequest(HolidayRequest holidayRequest) {
 		if(Objects.isNull(this.holidayRequests)) {
-			this.holidayRequests = new ArrayList<>();
+			this.holidayRequests = new HashSet<>();
 		}
 		this.holidayRequests.add(holidayRequest);
 		holidayRequest.setIssuer(this);

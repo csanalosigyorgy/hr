@@ -6,6 +6,7 @@ import static hu.webuni.hr.gyuri96.model.RequiredEducationLevel.UNIVERSITY;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import javax.transaction.Transactional;
 
@@ -54,29 +55,29 @@ public class InitDBService {
 	@Transactional
 	public void insertTestData(){
 
-		LegalEntityType kft = new LegalEntityType(1, "Kft.");
+		LegalEntityType kft = new LegalEntityType(0L, "Kft.");
 		legalEntityTypeRepository.save(kft);
-
-		List<Position> torleyPositions = new ArrayList<>();
-		Position torleyFactoryWorker = new Position(0L, "Factory worker", HIGH_SCHOOL, null);
-		torleyPositions.add(torleyFactoryWorker);
-		Position torleyShiftManager = new Position(0L, "Shift Manager", UNIVERSITY, null);
-		torleyPositions.add(torleyShiftManager);
-		positionRepository.saveAll(torleyPositions);
 
 		Company torley = new Company(0L, "01-09-883786", "Törley Pezsgőpincészet Kft.", "1222 Budapest, Háros u. 2-6.", kft, null);
 		companyRepository.save(torley);
 
-		Employee feherPeter = new Employee(0L, "Fehér Péter", 3420, LocalDate.of(2012, 5, 19), torleyShiftManager, torley, null, "feher.peter", passwordEncoder.encode("pass"));
-		torley.addEmployee(feherPeter);
-		torley.addEmployee(new Employee(0L, "Vona Mária",  1890, LocalDate.of(2016, 7, 18), torleyFactoryWorker, torley, null, "vona.maria", passwordEncoder.encode("pass")));
-		torley.addEmployee(new Employee("Varga Tamás",  1280, LocalDate.of(2018, 4, 2), torleyFactoryWorker, torley));
-		torley.addEmployee(new Employee("Tóth Lívia", 1650, LocalDate.of(2016, 5, 4), torleyFactoryWorker, torley));
-		torley.addEmployee(new Employee("Érdi Géza",  1760, LocalDate.of(2017, 9, 11), torleyFactoryWorker, torley));
-		employeeRepository.saveAll(torley.getEmployees());
+		List<Position> torleyPositions = new ArrayList<>();
+		Position torleyFactoryWorker = new Position("Factory worker", HIGH_SCHOOL);
+		torleyPositions.add(torleyFactoryWorker);
+		Position torleyShiftManager = new Position("Shift Manager", UNIVERSITY);
+		torleyPositions.add(torleyShiftManager);
+		positionRepository.saveAll(torleyPositions);
 
 		positionDetailsByCompanyRepository.save(new PositionDetailsByCompany(0L, 1250, torley, torleyFactoryWorker));
 		positionDetailsByCompanyRepository.save(new PositionDetailsByCompany(0L, 3000, torley, torleyShiftManager));
+
+		Employee feherPeter = new Employee(0L, "Fehér Péter", 3420, LocalDate.of(2012, 5, 19), torleyShiftManager, torley, null, null, null, "feher.peter", passwordEncoder.encode("pass"));
+		torley.addEmployee(feherPeter);
+		torley.addEmployee(new Employee(0L, "Vona Mária",  1890, LocalDate.of(2016, 7, 18), torleyFactoryWorker, torley, null, feherPeter, null, "vona.maria", passwordEncoder.encode("pass")));
+		torley.addEmployee(new Employee(0L, "Varga Tamás",  1280, LocalDate.of(2018, 4, 2), torleyFactoryWorker, torley, null, feherPeter, null, "varga.tamas", passwordEncoder.encode("pass")));
+		torley.addEmployee(new Employee("Tóth Lívia", 1650, LocalDate.of(2016, 5, 4), torleyFactoryWorker, torley));
+		torley.addEmployee(new Employee("Érdi Géza",  1760, LocalDate.of(2017, 9, 11), torleyFactoryWorker, torley));
+		employeeRepository.saveAll(torley.getEmployees());
 
 
 //		Company naplemente = new Company(0L, "01-09-562739", "Naplemente Borászati Kft.", null, "8253 Révfülöp, Szilva utca 4.", null, null);

@@ -41,7 +41,7 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long>, JpaSp
 	@EntityGraph("Employee.full")
 	Optional<Employee> findById(Long id);
 
-	@EntityGraph(attributePaths = {"company", "position", "holidayRequests"})
+	@EntityGraph(attributePaths = {"company", "position", "holidayRequests", "manager"})
 	@Query("select e from Employee e where e.id = ?1")
 	Optional<Employee> findByIdDetailed(Long id);
 
@@ -62,4 +62,8 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long>, JpaSp
 
 	@Query("SELECT e FROM Employee e WHERE e.username = :username")
 	Optional<Employee> findByUsername(String username);
+
+	@EntityGraph(attributePaths = {"manager", "managedEmployees"})
+	@Query("SELECT e FROM Employee e WHERE e.username = :username")
+	Optional<Employee> findByUsernameWithManagerAndManagedEmployees(String username);
 }

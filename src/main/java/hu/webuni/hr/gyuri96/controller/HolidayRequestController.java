@@ -57,12 +57,11 @@ public class HolidayRequestController {
 
 	@DeleteMapping("/{issuerId}/{id}")
 	@PreAuthorize("#issuerId == authentication.principal.employee.id")
-	public void deleteHolidayRequest(@PathVariable long id){
+	public void deleteHolidayRequest(@PathVariable long issuerId, @PathVariable long id){
 		holidayRequestService.deleteHolidayRequest(id);
 	}
 
 	@PutMapping(value = "/{id}/process", params = {"approverId", "status"})
-	//@PreAuthorize("#approverId == authentication.principal.employee.id") // TODO managerId kell majd itt!
 	public HolidayRequestDto processHolidayRequest(@PathVariable long id, @RequestParam long approverId, @RequestParam boolean status){
 		return holidayRequestService.processHolidayRequest(id, approverId, status);
 	}

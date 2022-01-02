@@ -25,7 +25,7 @@ public class HrUserDetailsService implements UserDetailsService {
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 		Employee employee = employeeRepository
-				.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException(username));
+				.findByUsernameWithManagerAndManagedEmployees(username).orElseThrow(() -> new UsernameNotFoundException(username));
 		log.info("User was login");
 		return new HrUser(username,
 				employee.getPassword(),
